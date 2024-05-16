@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="fragments :: head (titulo='Perfil')"></head>
+
+<body>
+
+<!-- Si el usuario está logueado, incluye el Navbar normal -->
+<div th:if="${logueado != null}">
+    <!-- Recuperamos el objeto "usuarios" que nos pasa el Controller y usamos sus atributos, pasándolos al NavBar -->
+    <div th:replace="fragments :: navbar(userName=${logueado} ? ${logueado.getNombre()} : '',
+                     userId=${logueado} ? ${logueado.getId()} : '')"></div>
+
+    <!-- Si está logueado mostramos la información completa del usuario -->
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col">
+                <h2 class="text-center" th:text="'Perfil de ' + ${usuario.nombre}"></h2>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col">
+                <table class="table table-striped">
+                    <thead class="thead-dark">
+                    <tr>
+                        <th scope="col">Id</th>
+                        <th scope="col">Correo Electrónico</th>
+                        <th scope="col">Nombre</th>
+                        <th scope="col">Contraseña</th>
+                        <th scope="col">Fecha de nacimiento</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td th:text="${usuario.id}"></td>
+                        <td th:text="${usuario.email}"></td>
+                        <td th:text="${usuario.nombre}"></td>
+                        <td th:text="${usuario.password}"></td>
+                        <td th:text="${usuario.fechaNacimiento != null ? usuario.fechaNacimiento : 'No especificada'}"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <!-- Botón para redirigir a la página de actualizar perfil -->
+        <div class="row mt-4">
+            <div class="col text-center">
+                <a th:href="@{'/perfil/' + ${logueado.getId()} + '/actualizar'}" class="btn btn-primary">Actualizar Perfil</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:replace="fragments::javascript"/>
+
+</body>
+</html>

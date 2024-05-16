@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="fragments :: head (titulo='Usuarios en Equipo')"></head>
+
+<body>
+
+<div th:replace="fragments :: navbar(userName=${usuario} ? ${usuario.getNombre()} : '',
+                     userId=${usuario} ? ${usuario.getId()} : '')"></div>
+
+<div class="container mt-5">
+
+    <div class="row">
+        <div class="col text-center">
+            <h2 class="mb-4" th:text="'Usuarios y Tareas del equipo: ' + ${equipo.nombre}"></h2>
+        </div>
+    </div>
+
+    <div class="row mt-3">
+        <div class="col">
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped">
+                    <thead class="thead-dark">
+                    <tr>
+                        <th class="text-center">Id</th>
+                        <th class="text-center">Correo Electrónico</th>
+                        <th class="text-center">Nombre</th>
+                        <th class="text-center">Fecha de Nacimiento</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="usuario, iterStat : ${usuarios}" th:class="${iterStat.odd}? 'odd' : 'even'">
+                        <td class="text-center" th:text="${usuario.id}"></td>
+                        <td th:text="${usuario.email}"></td>
+                        <td th:text="${usuario.nombre}"></td>
+                        <td class="text-center" th:text="${usuario.fechaNacimiento}"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-3">
+        <div class="col">
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped">
+                    <thead class="thead-dark">
+                    <tr>
+                        <th class="text-center">ID Tarea</th>
+                        <th class="text-center">Nombre Tarea</th>
+                        <th class="text-center">Fecha Limite</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="tarea, status : ${tareasEquipo}" th:class="${status.odd}? 'odd' : 'even'">
+                        <td class="text-center" th:text="${tarea.id}"></td>
+                        <td class="text-center" th:text="${tarea.titulo}"></td>
+                        <td class="text-center" th:text="${tarea.fechaLimite}"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col text-center">
+            <a class="btn btn-primary" th:href="@{/equipos}">Volver a Equipos</a>
+        </div>
+    </div>
+
+</div>
+
+<div th:replace="fragments::javascript"/>
+
+</body>
+</html>

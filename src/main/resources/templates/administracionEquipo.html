@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="fragments :: head (titulo='Administración de Equipo')"></head>
+
+<body>
+
+<div th:replace="fragments :: navbar(userName=${usuario} ? ${usuario.getNombre()} : '',
+                     userId=${usuario} ? ${usuario.getId()} : '')"></div>
+
+<div class="container-fluid">
+
+    <div class="row mt-3">
+        <div class="col">
+            <h2 th:text="'Administración del equipo: ' + ${equipo.nombre}"></h2>
+        </div>
+    </div>
+
+    <div class="row mt-3">
+        <div class="col">
+            <div th:if="${errorCambiarNombre}">
+                <div class="alert alert-danger" th:text="${errorCambiarNombre}"></div>
+            </div>
+            <div th:if="${correctoCambioNombre}">
+                <div class="alert alert-success" th:text="${correctoCambioNombre}"></div>
+            </div>
+            <div th:if="${errorEliminacion}">
+                <div class="alert alert-danger" th:text="${errorEliminacion}"></div>
+            </div>
+            <br>
+            <form th:action="@{'/equipos/' + ${equipoId} + '/cambiarNombre'}" method="post">
+                <div class="form-group">
+                    <input type="text" class="form-control" id="nuevoNombre" name="nuevoNombre" placeholder="Nuevo Nombre del Equipo" required>
+                </div>
+                <button type="submit" class="btn btn-success">Cambiar Nombre</button>
+            </form>
+        </div>
+    </div>
+
+    <br>
+
+    <div class="row mt-3">
+        <div class="col">
+            <div th:if="${errorCambiarDescripcion}">
+                <div class="alert alert-danger" th:text="${errorCambiarDescripcion}"></div>
+            </div>
+            <div th:if="${correctaDescripcion}">
+                <div class="alert alert-success" th:text="${correctaDescripcion}"></div>
+            </div>
+            <br>
+            <form th:action="@{'/equipos/' + ${equipoId} + '/descripcion'}" method="post">
+                <div class="form-group">
+                    <input type="text" class="form-control" id="nuevaDescripcion" name="nuevaDescripcion" placeholder="Nueva Descripción" required>
+                </div>
+                <button type="submit" class="btn btn-success">Añadir Descripción</button>
+            </form>
+        </div>
+    </div>
+
+    <br>
+
+    <div th:if="${equipoAdmin != null}">
+        <div class="row mt-3">
+            <div class="col">
+                <h3 th:text="'El admin del equipo es: ' + ${equipoAdmin.nombre}"></h3>
+            </div>
+            <div class="col">
+                <form th:action="@{'/equipos/' + ${equipoId} + '/eliminarAdmin/' + ${idAdmin}}" method="post">
+                    <button type="submit" class="btn btn-danger">Eliminar Admin</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div th:if="${errorEliminar}">
+        <div class="alert alert-danger" th:text="${errorEliminar}"></div>
+    </div>
+    <div th:if="${correctoEliminar}">
+        <div class="alert alert-success" th:text="${correctoEliminar}"></div>
+    </div>
+
+    <br>
+
+    <div th:if="${equipoAdmin == null and not #lists.isEmpty(usuarios)}">
+        <div class="row mt-3">
+            <div class="col">
+                <form th:action="@{'/equipos/' + ${equipoId} + '/asignarUsuario'}" method="post">
+                    <div class="form-group">
+                        <select class="form-control" id="usuarioId" name="usuarioId" required>
+                            <option disabled selected="">Selecciona un usuario</option>
+                            <option th:each="user : ${usuarios}" th:value="${user.id}" th:text="${user.nombre}" ></option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-success">Asignar Administrador</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div th:if="${errorAsignar}">
+        <div class="alert alert-danger" th:text="${errorAsignar}"></div>
+    </div>
+    <div th:if="${correctoAsignar}">
+        <div class="alert alert-success" th:text="${correctoAsignar}"></div>
+    </div>
+
+    <br>
+
+    <div class="row mt-1 small">
+        <div class="col">
+            <form th:action="@{'/equipos/' + ${equipoId} + '/eliminar'}" method="post">
+                <button type="submit" class="btn btn-danger btn-sm mr-2">Eliminar Equipo</button>
+            </form>
+        </div>
+        <div class="col">
+            <a class="btn btn-primary btn-sm" th:href="@{/equipos}">Volver a Equipos</a>
+        </div>
+    </div>
+</div>
+
+<div th:replace="fragments::javascript"/>
+
+<script th:inline="javascript">
+    /* Función para ocultar alertas después de 5 segundos */
+    function hideAlerts() {
+        setTimeout(function() {
+            var alerts = document.querySelectorAll('.alert');
+            alerts.forEach(function(alert) {
+                alert.style.display = 'none';
+            });
+        }, 5000); // 5000 milisegundos = 5 segundos
+    }
+
+    // Llama a la función al cargar la página
+    document.addEventListener('DOMContentLoaded', function() {
+        hideAlerts();
+    });
+</script>
+
+</body>
+</html>

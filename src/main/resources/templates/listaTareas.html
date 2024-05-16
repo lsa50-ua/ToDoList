@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="fragments :: head (titulo='Login')">
+
+    <style>
+        .board {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+        }
+
+        .list {
+            width: 300px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            background-color: #f9f9f9;
+        }
+
+        .card {
+            padding: 8px;
+            margin-bottom: 8px;
+            border: 1px solid #ddd;
+            background-color: #fff;
+            border-radius: 3px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .card:hover {
+            background-color: #f0f0f0;
+        }
+    </style>
+</head>
+<div th:replace="fragments :: navbar(userName=${usuario} ? ${usuario.getNombre()} : '',
+                     userId=${usuario} ? ${usuario.getId()} : '')"></div>
+<body>
+<div class="container-fluid">
+
+    <div class="row mt-3">
+        <div class="col">
+            <h2 th:text="'Listado de tareas de ' + ${usuario.nombre}"></h2>
+        </div>
+    </div>
+    <div class="row mt-3">
+        <div class="col">
+            <a class="btn btn-info" href="/tareas/calendario">📅 Mostrar Calendario</a>
+        </div>
+    </div>
+
+    <!-- ... Código anterior ... -->
+    <div class="container-fluid">
+        <div class="board row">
+            <div class="list col-md-4 " id="porHacer" ondrop="drop(event)" ondragover="allowDrop(event)">
+                <h3>Por Hacer</h3>
+                <!-- Recorre las tareas y colócalas en la columna correspondiente -->
+                <div th:each="tarea: ${tareas}" class="card" th:id="'card-' + ${tarea.id}" draggable="true" ondragstart="drag(event)">
+                    <div th:if="${tarea.estado == tarea.estado.POR_HACER}">
+                        <p><a th:text="${tarea.id}+' ' + ${tarea.titulo}" th:href="@{/tarea/{id}/(id=${tarea.id})}"></a></p>
+
+                        <a class="btn btn-primary btn-xs" th:href="@{/tareas/{id}/editar(id=${tarea.id})}">✏️ editar</a>
+                        <button class="btn btn-danger btn-xs" onmouseover="" style="cursor: pointer;"
+                                th:onclick="'del(\'/tareas/' + ${tarea.id} + '\')'">🗑️ borrar</button>
+                        <button th:onclick="'toggleDestacada(\'/tareas/' + ${tarea.id} + '/destacada\')'">
+                            <!-- Emoji de estrella vacía si no está destacada, estrella amarilla si está destacada -->
+                            <span th:if="${tarea.destacada}">⭐</span>
+                            <span th:unless="${tarea.destacada}">☆</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="list col-md-4" id="enProceso" ondrop="drop(event)" ondragover="allowDrop(event)">
+                <h3>En Proceso</h3>
+                <!-- Recorre las tareas y colócalas en la columna correspondiente -->
+                <div th:each="tarea: ${tareas}" th:id="'card-' + ${tarea.id}" class="card"  draggable="true" ondragstart="drag(event)">
+                    <div th:if="${tarea.estado == tarea.estado.EN_PROCESO}">
+                        <p><a th:text="${tarea.id}+' ' + ${tarea.titulo}" th:href="@{/tarea/{id}/(id=${tarea.id})}"></a></p>
+                        <a class="btn btn-primary btn-xs" th:href="@{/tareas/{id}/editar(id=${tarea.id})}">✏️ editar</a>
+                        <button class="btn btn-danger btn-xs" onmouseover="" style="cursor: pointer;"
+                                th:onclick="'del(\'/tareas/' + ${tarea.id} + '\')'">🗑️ borrar</button>
+                        <button th:onclick="'toggleDestacada(\'/tareas/' + ${tarea.id} + '/destacada\')'">
+                            <!-- Emoji de estrella vacía si no está destacada, estrella amarilla si está destacada -->
+                            <span th:if="${tarea.destacada}">⭐</span>
+                            <span th:unless="${tarea.destacada}">☆</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="list col-md-4" id="Terminadas" ondrop="drop(event)" ondragover="allowDrop(event)">
+                <h3>Terminadas</h3>
+                <!-- Recorre las tareas y colócalas en la columna correspondiente -->
+                <div th:each="tarea: ${tareas}" class="card" th:id="'card-' + ${tarea.id}"  draggable="true" ondragstart="drag(event)">
+                    <div th:if="${tarea.estado == tarea.estado.TERMINADA}">
+                        <p><a th:text="${tarea.id}+' ' + ${tarea.titulo}" th:href="@{/tarea/{id}/(id=${tarea.id})}"></a></p>
+                        <a class="btn btn-primary btn-xs" th:href="@{/tareas/{id}/editar(id=${tarea.id})}">✏️ editar</a>
+                        <button class="btn btn-danger btn-xs" onmouseover="" style="cursor: pointer;"
+                                th:onclick="'del(\'/tareas/' + ${tarea.id} + '\')'">🗑️ borrar</button>
+                        <button th:onclick="'toggleDestacada(\'/tareas/' + ${tarea.id} + '/destacada\')'">
+                            <!-- Emoji de estrella vacía si no está destacada, estrella amarilla si está destacada -->
+                            <span th:if="${tarea.destacada}">⭐</span>
+                            <span th:unless="${tarea.destacada}">☆</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ... Código posterior ... -->
+
+
+    <p><a class="btn btn-primary" th:href="@{/usuarios/{id}/tareas/nueva(id=${usuario.id})}">🆕 Nueva tarea</a>
+        <a class="btn btn-link" href="/logout">Salir</a></p>
+
+    <div class="row mt-2">
+        <div class="col">
+            <div class="alert alert-success alert-dismissible fade show" role="alert"
+                 th:if="${!#strings.isEmpty(mensaje)}">
+                <span th:text="${mensaje}"></span>
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:replace="fragments::javascript"/>
+
+<!-- Lanzamos una petición DELETE por JavaScript para borrar una tarea -->
+<script type="text/javascript">
+    function del(urlBorrar) {
+        if (confirm('¿Estás seguro/a de que quieres borrar la tarea?')) {
+            fetch(urlBorrar, {
+                method: 'DELETE'
+            }).then((res) => location.reload());
+        }
+    }
+
+    function toggleDestacada(urlDestacada) {
+        fetch(urlDestacada, {
+            method: 'POST'
+        }).then((res) => {
+            // No es necesario cambiar las clases de Font Awesome aquí
+            location.reload();
+        });
+    }
+
+    function allowDrop(ev) {
+        ev.preventDefault();
+    }
+
+    function drag(ev) {
+        ev.dataTransfer.setData("text", ev.target.id);
+    }
+
+    function drop(ev) {
+        ev.preventDefault();
+        var data = ev.dataTransfer.getData("text");
+        console.log(data);
+        var draggedElement = document.getElementById(data);
+        console.log(draggedElement);
+        var targetList = ev.target.closest('.list');
+        var estado = targetList.id;
+        console.log(targetList);
+        targetList.appendChild(draggedElement);
+        var id = data.split("-");
+        console.log(id[1]);
+
+        var url = "/tarea/"+id[1]+"/estado/"+estado;
+        fetch(url, {
+            method: 'POST'
+        }).then((res) => {
+            // No es necesario cambiar las clases de Font Awesome aquí
+            location.reload();
+        });
+
+
+
+    }
+</script>
+</body>
+
+</html>

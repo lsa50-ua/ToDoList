@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="fragments :: head (titulo='Acerca de')"></head>
+
+<body>
+
+<!-- Si el usuario está logueado, incluye el Navbar normal -->
+<div th:if="${usuario != null}">
+    <!-- Recuperamos el objeto "usuarios" que nos pasa el Controller y usamos sus atributos, pasandolos al NavBar -->
+    <div th:replace="fragments :: navbar(userName=${usuario} ? ${usuario.getNombre()} : '',
+                     userId=${usuario} ? ${usuario.getId()} : '')"></div>
+</div>
+
+<!-- Si el usuario no está logueado, incluye el Navbar para no logueados -->
+<div th:if="${usuario == null}">
+    <div th:replace="fragments :: navbar_noLogueado"></div>
+</div>
+
+<div class="container-fluid">
+    <div class="container-fluid">
+        <h1 style="padding-left: 45%">ToDoList</h1>
+        <ul style="padding-left: 35%">
+            <li>Desarrollada por Noel Martínez Pomares, Jose Antonio Gomis Arenas , Luis Simón Albarrán </li>
+            <li>Versión 1.4.0</li>
+            <li>Fecha de última release: 19/12/2023</li>
+        </ul>
+        <h2 style="padding-left: 45%"> Emails De contacto</h2>
+        <p style="padding-left: 35%">Contactanos en caso de ayuda o encontrar un error en la aplicación</p>
+        <ul style="padding-left: 35%">
+            <li><a href="mailto:jaga21@alu.ua.es">jaga21@alu.ua.es</a></li>
+            <li><a href="mailto:npm50@alu.ua.es">npm50@alu.ua.es</a></li>
+            <li><a href="mailto:lsa50@alu.ua.es">lsa50@alu.ua.es</a></li>
+        </ul>
+    </div>
+
+</div>
+
+<div th:replace="fragments::javascript"/>
+
+</body>
+</html>

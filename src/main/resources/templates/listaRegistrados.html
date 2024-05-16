@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="fragments :: head (titulo='Registrados')"></head>
+
+<body>
+
+<!-- Si el usuario está logueado, incluye el Navbar normal -->
+<div th:if="${usuario != null}">
+    <!-- Recuperamos el objeto "usuarios" que nos pasa el Controller y usamos sus atributos, pasandolos al NavBar -->
+    <div th:replace="fragments :: navbar(userName=${usuario} ? ${usuario.getNombre()} : '',
+                     userId=${usuario} ? ${usuario.getId()} : '')"></div>
+
+    <!-- Si está logueado mostramos el botón para ver la descripción del usuario -->
+    <div class="container-fluid">
+
+        <div class="row mt-3">
+            <div class="col">
+                <h2>Lista de Registrados</h2>
+            </div>
+        </div>
+
+        <div class="row mt-3">
+            <div class="col">
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th>Id</th>
+                        <th>Correo Electrónico</th>
+                        <th>Descripción</th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="registrado: ${registrados}">
+                        <td th:text="${registrado.id}"></td>
+                        <td th:text="${registrado.email}"></td>
+                        <td>
+                            <a class="btn btn-primary btn-xs" th:href="@{/registrados/{id}(id=${registrado.id})}"/>Desc</a>
+                        </td>
+                        <td th:if="${registrado.admin == false and registrado.isBloqueado() == true}">
+                            <form th:action="@{/registrados/desbloquear/{id}(id=${registrado.id})}" method="post">
+                                <button type="submit" class="btn btn-block btn-xs btn-success">
+                                    Desbloquear
+                                </button>
+                            </form>
+                        </td>
+                        <td th:if="${registrado.admin == false and registrado.isBloqueado() == false}">
+                            <form th:action="@{/registrados/bloquear/{id}(id=${registrado.id})}" method="post">
+                                <button type="submit" class="btn btn-block btn-xs btn-danger">
+                                    Bloquear
+                                </button>
+                            </form>
+                        </td>
+                        <td th:if="${registrado.admin == false}">
+                            <spa></spa>
+                        </td>
+                        <td th:if="${registrado.admin == true}">
+                            <spa></spa>
+                        </td>
+                        <td th:if="${registrado.admin == true}">
+                            <spa></spa>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:replace="fragments::javascript"/>
+
+</body>
+</html>

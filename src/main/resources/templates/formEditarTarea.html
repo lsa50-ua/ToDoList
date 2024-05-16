@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="fragments :: head (titulo='Modificación de Tarea')"></head>
+
+<body>
+<div th:replace="fragments :: navbar(userName=${usuario} ? ${usuario.getNombre()} : '',
+                     userId=${usuario} ? ${usuario.getId()} : '')"></div>
+
+<div class="container-fluid">
+
+    <h2 th:text="'Modificación de la tarea ' + ${tarea.getId()}"></h2>
+
+    <form method="post" th:action="@{/tareas/{id}/editar(id=${tarea.id})}" th:object="${tareaData}">
+        <div class="col-6">
+            <div class="form-group">
+                <label for="titulo">Título de la tarea:</label>
+                <input class="form-control" id="titulo" name="titulo" required th:field="*{titulo}" type="text"/>
+            </div>
+            <div class="form-group">
+                <label for="fechaLimite">Fecha Limite:</label>
+                <input id="fechaLimite" class="form-control" name="fechaLimite" placeholder="01-12-2019" required th:field="*{fechaLimite}" />
+                <small>Formato: dd-mm-aaaa</small>
+            </div>
+            <div class="form-group">
+                <label for="estado">Estado de la tarea:</label>
+                <th:block th:text="${tarea.estado}"></th:block>
+
+                <select class="form-control" id="estado" name="estado" th:field="*{estado}">
+
+                    <option value="POR_HACER" th:selected="${tarea.getEstado() == 'POR_HACER'}">Por Hacer</option>
+                    <option value="EN_PROCESO" th:selected="${tarea.getEstado() == 'EN_PROCESO'}">En Proceso</option>
+                    <option value="TERMINADA" th:selected="${tarea.getEstado() == 'TERMINADA'}">Terminada</option>
+                </select>
+            </div>
+
+            <button class="btn btn-primary" type="submit">Modificar tarea</button>
+            <a class="btn btn-link" th:href="@{/usuarios/{id}/tareas(id=${tarea.usuarioId})}">Cancelar</a>
+        </div>
+    </form>
+</div>
+
+<div th:replace="fragments::javascript"/>
+
+</body>
+</html>

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="fragments :: head (titulo='Detalles tarea')">
+    <!-- Agregar enlaces a Bootstrap CSS -->
+
+</head>
+
+<body>
+<div th:replace="fragments :: navbar(userName=${usuario} ? ${usuario.getNombre()} : '',
+                     userId=${usuario} ? ${usuario.getId()} : '')"></div>
+
+<div class="container-fluid">
+    <div class="container text-center">
+        <div class="mt-4">
+            <h2 th:text="'Tarea: ' + ${tarea.titulo}"></h2>
+            <p th:text="'Fecha Límite: ' + ${#dates.format(tarea.fechaLimite, 'yyyy-MM-dd')}" class="mb-2"></p>
+            <p th:text="'Estado: ' + ${tarea.estado}" class="mb-2"></p>
+            <p th:if="${tarea.destacada}" class="mb-4">Destacada</p>
+        </div>
+    </div>
+
+
+
+    <!-- Mostrar comentarios -->
+    <h3>Comentarios:</h3>
+    <ul class="list-group">
+        <li th:each="comentario: ${comentarios}" class="list-group-item">
+            <div>
+                <p th:text="'Usuario: ' + ${comentario.getUsername()} +',  Fecha: ' + ${#dates.format(comentario.fecha, 'yyyy-MM-dd')} "></p>
+                <p th:text="'Comentario: ' + ${comentario.texto}"></p>
+            </div>
+            <div th:if="${usuario.getId().equals(comentario.getUsuarioID())}"><button class="btn btn-danger btn-xs" onmouseover="" style="cursor: pointer;"
+                         th:onclick="'del(\'/comentario/' + ${comentario.id} + '/borrar\')'">🗑️ borrar</button></div>
+
+        </li>
+    </ul>
+
+    <!-- Formulario para agregar comentario -->
+    <form th:action="'/tareas/'+${tarea.getId()}+'/comentarios/nuevo'" method="post" class="mt-4">
+        <div class="form-group">
+            <textarea id="texto" name="texto" placeholder="Escribe un comentario" required
+                      class="form-control" maxlength="100"></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Agregar Comentario</button>
+    </form>
+</div>
+
+<div th:replace="fragments::javascript"/>
+
+<script type="text/javascript">
+    function del(urlBorrar) {
+        if (confirm('¿Estás seguro/a de que quieres borrar el comentario?')) {
+            fetch(urlBorrar, {
+                method: 'DELETE'
+            }).then((res) => location.reload());
+        }
+    }
+</script>
+
+
+</body>
+</html>

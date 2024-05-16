@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="fragments :: head (titulo='Administración de Equipo')"></head>
+
+<body>
+
+<div th:replace="fragments :: navbar(userName=${usuario} ? ${usuario.getNombre()} : '',
+                     userId=${usuario} ? ${usuario.getId()} : '')"></div>
+
+<div class="container-fluid">
+
+    <div class="row mt-3">
+        <div class="col">
+            <h2 th:text="'Administración del equipo: ' + ${equipo.nombre}"></h2>
+        </div>
+    </div>
+
+    <div class="row mt-3">
+        <div class="col">
+            <div th:if="${errorCambiarNombre}">
+                <div class="alert alert-danger" th:text="${errorCambiarNombre}"></div>
+            </div>
+            <div th:if="${correctoCambioNombre}">
+                <div class="alert alert-success" th:text="${correctoCambioNombre}"></div>
+            </div>
+            <div th:if="${errorEliminacion}">
+                <div class="alert alert-danger" th:text="${errorEliminacion}"></div>
+            </div>
+            <br>
+            <form th:action="@{'/equipos/' + ${equipoId} + '/cambiarNombreNoAdmin'}" method="post">
+                <div class="form-group">
+                    <input type="text" class="form-control" id="nuevoNombre" name="nuevoNombre" placeholder="Nuevo Nombre del Equipo" required>
+                </div>
+                <button type="submit" class="btn btn-success">Cambiar Nombre</button>
+            </form>
+        </div>
+    </div>
+
+    <br>
+
+    <div class="row mt-3">
+        <div class="col">
+            <div th:if="${errorCambiarDescripcion}">
+                <div class="alert alert-danger" th:text="${errorCambiarDescripcion}"></div>
+            </div>
+            <div th:if="${correctaDescripcion}">
+                <div class="alert alert-success" th:text="${correctaDescripcion}"></div>
+            </div>
+            <br>
+            <form th:action="@{'/equipos/' + ${equipoId} + '/descripcionNoAdmin'}" method="post">
+                <div class="form-group">
+                    <input type="text" class="form-control" id="nuevaDescripcion" name="nuevaDescripcion" placeholder="Nueva Descripción" required>
+                </div>
+                <button type="submit" class="btn btn-success">Añadir Descripción</button>
+            </form>
+        </div>
+    </div>
+
+    <br>
+
+    <div class="row mt-3">
+        <div class="col">
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped">
+                    <thead class="thead-dark">
+                    <tr>
+                        <th class="text-center">ID</th>
+                        <th class="text-center">Nombre</th>
+                        <th class="text-center">Acción</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="usuario, iterStat : ${usuarios}" th:class="${iterStat.odd}? 'odd' : 'even'">
+                        <td class="text-center" th:text="${usuario.id}"></td>
+                        <td class="text-center" th:text="${usuario.nombre}"></td>
+                        <td class="text-center">
+                            <form th:action="@{'/equipos/' + ${equipoId} + '/eliminar/' + ${usuario.id}}" method="post">
+                                <button type="submit" class="btn btn-danger">Eliminar</button>
+                            </form>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+                <div th:if="${estadoIncorrecto}">
+                    <div class="alert alert-danger" th:text="${estadoIncorrecto}"></div>
+                </div>
+                <div th:if="${estadoCorrecto}">
+                    <div class="alert alert-success" th:text="${estadoCorrecto}"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br>
+    <div class="row mt-1 small">
+        <div class="col">
+            <form th:action="@{'/equipos/' + ${equipoId} + '/agregarTareaNoAsignada'}" method="post">
+                <div class="input-group">
+                    <select class="custom-select" id="miDropdown" name="opcionSeleccionada">
+                        <option value="" selected disabled hidden>Selecciona una tarea a agregar</option>
+                        <!-- Iterar sobre la lista de elementos y agregar opciones al dropdown -->
+                        <option th:each="tarea : ${tareasSinEquipoAsignado}" th:value="${tarea.getId()}" th:text="${tarea.getTitulo()}"></option>
+                    </select>
+                    <div class="input-group-append">
+                        <button class="btn btn-success" type="submit">Añadir</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <br>
+    <div class="row mt-3">
+        <div class="col">
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped">
+                    <thead class="thead-dark">
+                    <tr>
+                        <th class="text-center">ID Tarea</th>
+                        <th class="text-center">Nombre Tarea</th>
+                        <th class="text-center">Fecha Limite</th>
+                        <th class="text-center">Acción</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="tarea, status : ${tareasEquipo}" th:class="${status.odd}? 'odd' : 'even'">
+                        <td class="text-center" th:text="${tarea.id}"></td>
+                        <td class="text-center" th:text="${tarea.titulo}"></td>
+                        <td class="text-center" th:text="${tarea.fechaLimite}"></td>
+                        <td class="text-center">
+                            <form th:action="@{'/equipos/' + ${equipoId} + '/eliminarTarea/' + ${tarea.id}}" method="post">
+                                <button type="submit" class="btn btn-danger">Eliminar</button>
+                            </form>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <br>
+    <div class="row mt-1 small">
+        <div class="col">
+            <form th:action="@{'/equipos/' + ${equipoId} + '/eliminarNoAdmin'}" method="post">
+                <button type="submit" class="btn btn-danger btn-sm mr-2">Eliminar Equipo</button>
+            </form>
+        </div>
+        <div class="col">
+            <a class="btn btn-primary btn-sm" th:href="@{/equipos}">Volver a Equipos</a>
+        </div>
+    </div>
+<br>
+
+
+</div>
+
+<div th:replace="fragments::javascript"/>
+
+<script th:inline="javascript">
+    /* Función para ocultar alertas después de 5 segundos */
+    function hideAlerts() {
+        setTimeout(function() {
+            var alerts = document.querySelectorAll('.alert');
+            alerts.forEach(function(alert) {
+                alert.style.display = 'none';
+            });
+        }, 5000); // 5000 milisegundos = 5 segundos
+    }
+
+    // Llama a la función al cargar la página
+    document.addEventListener('DOMContentLoaded', function() {
+        hideAlerts();
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="fragments :: head (titulo='Equipos')"></head>
+
+<body>
+
+<div th:replace="fragments :: navbar(userName=${usuario} ? ${usuario.getNombre()} : '',
+                     userId=${usuario} ? ${usuario.getId()} : '')"></div>
+
+<div class="container-fluid">
+
+    <div th:if="${esAdmin}">
+        <div class="row mt-3">
+            <div class="col">
+                <h2>Crear Equipo</h2>
+                <form th:action="@{/equipos/crear}" method="post">
+                    <div class="form-group">
+                        <input type="text" class="form-control" id="nombreEquipo" name="nombreEquipo" placeholder="Nombre del equipo" required>
+                    </div>
+                    <button type="submit" class="btn btn-success">Crear Equipo</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <br>
+
+    <div th:if="${errorCrearEquipo}">
+        <div class="alert alert-danger" th:text="${errorCrearEquipo}"></div>
+    </div>
+
+    <br>
+
+    <div class="row mt-3">
+        <div class="col">
+            <h2>Lista de Equipos</h2>
+        </div>
+    </div>
+
+    <div th:if="${errorUnirse}">
+        <div class="alert alert-danger" th:text="${errorUnirse}"></div>
+    </div>
+
+    <div th:if="${errorAbandonar}">
+        <div class="alert alert-danger" th:text="${errorAbandonar}"></div>
+    </div>
+
+    <div th:if="${correcto}">
+        <div class="alert alert-success" th:text="${correcto}"></div>
+    </div>
+
+    <div th:if="${correctoAbandono}">
+        <div class="alert alert-success" th:text="${correctoAbandono}"></div>
+    </div>
+
+    <div class="row mt-3">
+        <div class="col">
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th>Nombre del Equipo</th>
+                    <th>Descripción</th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="equipo: ${equipos}">
+                    <td th:text="${equipo.nombre}"></td>
+                    <td th:text="${equipo.descripcion}"></td>
+                    <td>
+                        <a class="btn btn-primary btn-xs" th:href="@{'/equipos/' + ${equipo.id} + '/usuarios'}">Usuarios y Tareas</a>
+                    </td>
+                    <td>
+                        <form th:action="@{'/equipos/' + ${equipo.id} + '/unirse'}" method="post">
+                            <button type="submit" class="btn btn-success">Unirse</button>
+                        </form>
+                    </td>
+                    <td>
+                        <form th:action="@{'/equipos/' + ${equipo.id} + '/abandonar'}" method="post">
+                            <button type="submit" class="btn btn-danger">Abandonar</button>
+                        </form>
+                    </td>
+                    <td th:if="${equipo.id == equipoAdministrado}">
+                        <a class="btn btn-warning btn-xs" th:href="@{'/equipos/' + ${equipo.id} + '/noAdminAdministracion'}">Modificar</a>
+                    </td>
+                    <td th:if="${equipo.id != equipoAdministrado}"></td>
+                    <td th:if="${esAdmin}">
+                        <a class="btn btn-info btn-xs" th:href="@{'/equipos/' + ${equipo.id} + '/administrar'}">Administrar</a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+<div th:replace="fragments::javascript"/>
+
+<script th:inline="javascript">
+    /* Función para ocultar alertas después de 5 segundos */
+    function hideAlerts() {
+        setTimeout(function() {
+            var alerts = document.querySelectorAll('.alert');
+            alerts.forEach(function(alert) {
+                alert.style.display = 'none';
+            });
+        }, 5000); // 5000 milisegundos = 5 segundos
+    }
+
+    // Llama a la función al cargar la página
+    document.addEventListener('DOMContentLoaded', function() {
+        hideAlerts();
+    });
+</script>
+
+</body>
+</html>
